@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "com.facebook.react"
+apply plugin: "kotlin-android"
 
 import com.android.build.OutputFile
 
@@ -93,9 +94,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.biometricsdkreactnativeexample"
+    namespace "net.iriscan.sdk.example"
     defaultConfig {
-        applicationId "com.biometricsdkreactnativeexample"
+        applicationId "net.iriscan.sdk.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -151,8 +152,11 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.0"
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+
+    implementation project(':react-native-fs')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {

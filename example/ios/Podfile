@@ -26,6 +26,8 @@ target 'BiometricSdkReactNativeExample' do
 
   # Flags change depending on the env values.
   flags = get_default_flags()
+  
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
 
   use_react_native!(
     :path => config[:reactNativePath],

@@ -11,11 +11,43 @@ npm install biometric-sdk-react-native
 ## Usage
 
 ```js
-import { multiply } from 'biometric-sdk-react-native';
+import {
+  configure,
+  faceCompare,
+  faceExtractAndEncode,
+} from 'biometric-sdk-react-native';
 
-// ...
+// configure sdk
+const config = {
+  withFace: {
+    encoder: {
+      faceNetModel: {
+        tfliteModelPath: 'assets://facenet-default.tflite',
+        tfliteModelChecksum: -1,
+        inputWidth: 160,
+        inputHeight: 160,
+        outputLength: 128,
+      },
+    },
+    matcher: {
+      threshold: 10.0,
+    },
+  },
+};
+configure(config).then(() => console.log('Biometric SDK Ready'));
 
-const result = await multiply(3, 7);
+// use
+// create templates from base64 image
+const template1 = await faceExtractAndEncode(image1.data);
+const template2 = await faceExtractAndEncode(image2.data);
+
+// compare templates
+const result = await faceCompare(template1, template2);
+console.log(`Result = ${result}`)
+
+// prints
+// Result = true
+
 ```
 
 ## Contributing

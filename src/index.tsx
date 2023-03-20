@@ -17,6 +17,17 @@ const BiometricSdkReactNative = NativeModules.BiometricSdkReactNative
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return BiometricSdkReactNative.multiply(a, b);
+export function configure(config: any): Promise<string> {
+  return BiometricSdkReactNative.configure(config);
+}
+
+export function faceExtractAndEncode(image: string): Promise<string> {
+  return BiometricSdkReactNative.faceExtractAndEncode(image);
+}
+
+export function faceCompare(
+  template1: string,
+  template2: string
+): Promise<boolean> {
+  return BiometricSdkReactNative.faceCompare(template1, template2);
 }

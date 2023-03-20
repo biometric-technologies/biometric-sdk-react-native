@@ -2,9 +2,21 @@
 
 @interface RCT_EXTERN_MODULE(BiometricSdkReactNative, NSObject)
 
-RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(configure:
+                  (NSDictionary*) configuration
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject);
+
+RCT_EXTERN_METHOD(faceExtractAndEncode:
+                  (NSString*)b64Img
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject);
+
+RCT_EXTERN_METHOD(faceCompare:
+                  (NSString*)b64Template1
+                  b64Template2:(NSString*)b64Template2
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject);
 
 + (BOOL)requiresMainQueueSetup
 {
