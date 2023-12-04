@@ -19,7 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+          cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Check Node.js and Yarn versions
+        run: |
+          node --version
+          yarn --version
 
       - name: Cache dependencies
         id: yarn-cache
