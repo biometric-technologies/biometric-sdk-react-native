@@ -1,31 +1,44 @@
 import * as React from 'react';
 
-import { Alert, Button, Image, Platform, StyleSheet, View } from 'react-native';
+import { Button, Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import RNFS from 'react-native-fs';
-import {
-  configure,
-  faceCompare,
-  faceExtractAndEncode,
-} from 'biometric-sdk-react-native';
+import { configure, faceCompare, faceScore, livenessScore, livenessValidate } from '@iriscan/biometric-sdk-react-native';
 
 export default function App() {
   const [image1, setImage1] = React.useState<{ path: string; data: string }>();
   const [image2, setImage2] = React.useState<{ path: string; data: string }>();
 
+  const [result, setResult] = React.useState<string>('');
+  const [score, setScore] = React.useState<string>('');
+  const [liveness1, setLiveness1] = React.useState<string>('Spoof: -, Score: -');
+  const [liveness2, setLiveness2] = React.useState<string>('Spoof: -, Score: -');
+
   React.useEffect(() => {
-    const config = {
+    let config = {
       withFace: {
         encoder: {
-          faceNetModel: {
-            tfliteModelPath: 'assets://facenet-default.tflite',
-            tfliteModelChecksum: -1,
+          tfModel: {
+            path: 'https://github.com/biometric-technologies/tensorflow-facenet-model-test/raw/master/model.tflite',
             inputWidth: 160,
             inputHeight: 160,
-            outputLength: 128,
+            outputLength: 512,
+            // optional
+            modelChecksum: '797b4d99794965749635352d55da38d4748c28c659ee1502338badee4614ed06',
           },
         },
         matcher: {
-          threshold: 10.0,
+          threshold: 1.0,
+        },
+        liveness: {
+          tfModel: {
+            path: 'https://github.com/biometric-technologies/liveness-detection-model/releases/download/v0.2.0/deePix.tflite',
+            inputWidth: 224,
+            inputHeight: 224,
+            // 0.0 - real, 1.0 - spoof
+            threshold: 0.5,
+            // optional
+            // modelChecksum: "797b4d99794965749635352d55da38d4748c28c659ee1502338badee4614ed06",
+          },
         },
       },
     };
@@ -33,7 +46,7 @@ export default function App() {
   }, []);
 
   const loadImage = async (
-    index: number
+    index: number,
   ): Promise<{ path: string; data: string }> => {
     if (Platform.OS === 'ios') {
       const path = `${RNFS.MainBundlePath}/images/img${index}.jpg`;
@@ -62,38 +75,70 @@ export default function App() {
     if (image1 === undefined || image2 === undefined) {
       return;
     }
-    const template1 = await faceExtractAndEncode(image1.data);
-    const template2 = await faceExtractAndEncode(image2.data);
-    const result = await faceCompare(template1, template2);
+    setResult('Calculating ... Please wait');
+    setScore('Score: -');
+    setLiveness1('Spoof: -, Score: -');
+    setLiveness2('Spoof: -, Score: -');
+    const score = await faceScore(image1.data, image2.data);
+    const result = await faceCompare(image1.data, image2.data);
+    const liveness1Score = await livenessScore(image1.data);
+    const liveness1Result = await livenessValidate(image1.data);
+    const liveness2Score = await livenessScore(image2.data);
+    const liveness2Result = await livenessValidate(image2.data);
+    setLiveness1(`Spoof: ${liveness1Result}, Score: ${liveness1Score.toFixed(4)}`);
+    setLiveness2(`Spoof: ${liveness2Result}, Score: ${liveness2Score.toFixed(4)}`);
     let matchResult: string;
     if (result) {
       matchResult = 'Images matched';
     } else {
       matchResult = 'Images not matched';
     }
-    Alert.alert('Compare result', matchResult);
+    setResult(`Score: ${matchResult}`);
+    setScore(score.toString(4));
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Button title={'Load images'} onPress={loadRandomImages} />
+      <View style={styles.vseparator} />
+      <Text style={styles.text}>Picture 1</Text>
       <Image style={styles.img1} source={{ uri: image1?.path }} />
+      <Text style={styles.text}>{liveness1}</Text>
+      <Text style={styles.text}>Picture 2</Text>
       <Image style={styles.img2} source={{ uri: image2?.path }} />
+      <Text style={styles.text}>{liveness2}</Text>
+      <View style={styles.vseparator} />
       <Button title={'Compare'} onPress={compareImages} />
-    </View>
+      <Text style={styles.text}>{score}</Text>
+      <Text style={styles.text}>{result}</Text>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
+    paddingStart: 10,
+    paddingEnd: 10,
+    paddingTop: 25,
+    paddingBottom: 75,
+    backgroundColor: 'black',
+  },
+  contentContainer: {
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 20,
+    color: '#ffffff',
+    alignSelf: 'center',
   },
   box: {
     width: 60,
     height: 60,
     marginVertical: 20,
+  },
+  vseparator: {
+    height: 25,
   },
   img1: {
     justifyContent: 'center',

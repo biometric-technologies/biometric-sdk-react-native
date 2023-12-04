@@ -80,9 +80,9 @@
     "react-native": "*"
   },
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 16.0.0"
   },
-  "packageManager": "^yarn@3.6.1",
+  "packageManager": "^yarn@1.22.1",
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [
