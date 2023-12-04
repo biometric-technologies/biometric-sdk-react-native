@@ -1,6 +1,6 @@
 {
   "name": "@iriscan/biometric-sdk-react-native",
-  "version": "0.2.2",
+  "version": "0.5.8",
   "description": "Biometric SDK is complete open-source solutions for operating biometric data on a different modals",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
