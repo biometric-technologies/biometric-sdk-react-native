@@ -1,4 +1,4 @@
-package net.iriscan.sdk.example
+package net.iriscan.reactnative.sdk.example
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -9,7 +9,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
 import com.rnfs.RNFSPackage
-import net.iriscan.sdk.BiometricSdkReactNativePackage
+import net.iriscan.reactnative.sdk.BiometricSdkReactNativePackage
 
 /**
  * @author Slava Gornostal

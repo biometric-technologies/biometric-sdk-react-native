@@ -82,6 +82,6 @@ if (isNewArchitectureEnabled()) {
   react {
     jsRootDir = file("../src/")
     libraryName = "BiometricSdkReactNative"
-    codegenJavaPackageName = "net.iriscan.sdk"
+    codegenJavaPackageName = "net.iriscan.reactnative.sdk"
   }
 }
