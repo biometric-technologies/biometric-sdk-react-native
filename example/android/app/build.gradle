@@ -94,9 +94,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "net.iriscan.sdk.example"
+    namespace "net.iriscan.reactnative.sdk.example"
     defaultConfig {
-        applicationId "net.iriscan.sdk.example"
+        applicationId "net.iriscan.reactnative.sdk.example"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

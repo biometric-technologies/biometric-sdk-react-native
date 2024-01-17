@@ -1,4 +1,4 @@
-package net.iriscan.sdk
+package net.iriscan.reactnative.sdk
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule

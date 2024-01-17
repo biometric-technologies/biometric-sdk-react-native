@@ -1,4 +1,4 @@
-package net.iriscan.sdk
+package net.iriscan.reactnative.sdk
 
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -6,6 +6,7 @@ import com.facebook.react.bridge.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.iriscan.sdk.BiometricSdkFactory
 import net.iriscan.sdk.core.io.HashMethod
 import net.iriscan.sdk.face.*
 

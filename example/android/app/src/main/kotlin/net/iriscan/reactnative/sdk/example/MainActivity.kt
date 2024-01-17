@@ -1,4 +1,4 @@
-package net.iriscan.sdk.example
+package net.iriscan.reactnative.sdk.example
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
