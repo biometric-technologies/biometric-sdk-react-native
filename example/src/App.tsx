@@ -1,8 +1,10 @@
 import * as React from 'react';
 
-import { Button, Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, Image, Modal, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import RNFS from 'react-native-fs';
 import { configure, faceCompare, faceScore, livenessScore, livenessValidate } from '@iriscan/biometric-sdk-react-native';
+import LivenessDialog from './LivenessDialog';
+import { useCameraPermission } from 'react-native-vision-camera';
 
 export default function App() {
   const [image1, setImage1] = React.useState<{ path: string; data: string }>();
@@ -12,6 +14,8 @@ export default function App() {
   const [score, setScore] = React.useState<string>('');
   const [liveness1, setLiveness1] = React.useState<string>('Spoof: -, Score: -');
   const [liveness2, setLiveness2] = React.useState<string>('Spoof: -, Score: -');
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const { hasPermission, requestPermission } = useCameraPermission()
 
   React.useEffect(() => {
     let config = {
@@ -30,7 +34,7 @@ export default function App() {
           threshold: 1.0,
         },
         liveness: {
-          tfModel: {
+          photo: {
             path: 'https://github.com/biometric-technologies/liveness-detection-model/releases/download/v0.2.0/deePix.tflite',
             inputWidth: 224,
             inputHeight: 224,
@@ -39,10 +43,16 @@ export default function App() {
             // optional
             // modelChecksum: "797b4d99794965749635352d55da38d4748c28c659ee1502338badee4614ed06",
           },
+          direction: {
+            threshold: 10.0
+          }
         },
       },
     };
     configure(config).then(() => console.log('Biometric SDK Ready'));
+    if (!hasPermission) {
+      requestPermission().then((res) => console.log('Permission: ' + res));
+    }
   }, []);
 
   const loadImage = async (
@@ -97,6 +107,15 @@ export default function App() {
     setScore(score.toString(4));
   };
 
+  const closeDialog = (result: boolean) => {
+    setModalVisible(false);
+    if (result) {
+      Alert.alert('Liveness pass?', 'SUCCESS');
+    } else  {
+      Alert.alert('Liveness pass?', 'FAIL');
+    }
+  }
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <Button title={'Load images'} onPress={loadRandomImages} />
@@ -111,6 +130,18 @@ export default function App() {
       <Button title={'Compare'} onPress={compareImages} />
       <Text style={styles.text}>{score}</Text>
       <Text style={styles.text}>{result}</Text>
+      <Button title={'Try Liveness'} onPress={() => setModalVisible(true)} />
+      <Modal
+        transparent={false}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}
+      >
+        <LivenessDialog close={closeDialog}/>
+      </Modal>
+      <View style={styles.vseparator} />
     </ScrollView>
   );
 }
@@ -126,6 +157,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  fullScreenModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white', // Or any other background color
   },
   text: {
     fontSize: 20,

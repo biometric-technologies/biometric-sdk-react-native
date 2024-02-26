@@ -34,7 +34,10 @@ RCT_EXTERN_METHOD(livenessValidate:
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject);
 
-
+RCT_EXTERN_METHOD(livenessGetDirection:
+                  (NSString*)b64Img
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject);
 
 + (BOOL)requiresMainQueueSetup
 {

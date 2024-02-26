@@ -38,20 +38,28 @@ class BiometricSdkReactNativeModule(reactContext: ReactApplicationContext) :
               overrideCacheOnWrongChecksum = true
             )
           )
-          var livenessPriperties: FaceLivenessDetectionProperties? = null
-          val livenessConfig = config.getMap("withFace")!!.getMap("liveness")?.getMap("tfModel")
-          if (livenessConfig != null) {
-            val livenessModelChecksum = livenessConfig.getString("modelChecksum")
-            livenessPriperties = FaceLivenessDetectionProperties(
-              tfModel = LivenessModelConfiguration(
-                path = livenessConfig.getString("path")!!,
-                inputHeight = livenessConfig.getInt("inputHeight"),
-                inputWidth = livenessConfig.getInt("inputWidth"),
-                threshold = livenessConfig.getDouble("threshold"),
+          var livenessProperties: FaceLivenessDetectionProperties? = null
+          val livenessPhotoConfig = config.getMap("withFace")!!.getMap("liveness")?.getMap("photo")
+          if (livenessPhotoConfig != null) {
+            val livenessModelChecksum = livenessPhotoConfig.getString("modelChecksum")
+            livenessProperties = FaceLivenessDetectionProperties(
+              photo = LivenessModelPhotoConfiguration(
+                path = livenessPhotoConfig.getString("path")!!,
+                inputHeight = livenessPhotoConfig.getInt("inputHeight"),
+                inputWidth = livenessPhotoConfig.getInt("inputWidth"),
+                threshold = livenessPhotoConfig.getDouble("threshold"),
                 modelChecksum = livenessModelChecksum,
                 modelChecksumMethod = if (livenessModelChecksum != null) HashMethod.SHA256 else null,
                 overrideCacheOnWrongChecksum = true
-              )
+              ),
+              position = livenessProperties?.position
+            )
+          }
+          val livenessDirectionConfig = config.getMap("withFace")!!.getMap("liveness")?.getMap("direction")
+          if (livenessDirectionConfig != null) {
+            livenessProperties = FaceLivenessDetectionProperties(
+              photo = livenessProperties?.photo,
+              position = LivenessModelPositionConfiguration(threshold = livenessDirectionConfig.getDouble("threshold"))
             )
           }
           configBuilder = configBuilder
@@ -59,7 +67,7 @@ class BiometricSdkReactNativeModule(reactContext: ReactApplicationContext) :
               extractor = FaceExtractProperties(),
               encoder = encoderProperties,
               matcher = FaceMatchProperties(threshold = matcherConfig.getDouble("threshold")),
-              liveness = livenessPriperties
+              liveness = livenessProperties
             )
         }
         BiometricSdkFactory.initialize(config = configBuilder.build())
@@ -107,7 +115,7 @@ class BiometricSdkReactNativeModule(reactContext: ReactApplicationContext) :
     val instance = BiometricSdkFactory.getInstance()!!
     val imageData = Base64.decode(b64Img, Base64.DEFAULT)
     val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-    val result = instance.face().liveness().extractAndValidate(bitmap)
+    val result = instance.face().livenessPhoto().extractAndValidate(bitmap)
     promise.resolve(result)
   }
 
@@ -116,8 +124,17 @@ class BiometricSdkReactNativeModule(reactContext: ReactApplicationContext) :
     val instance = BiometricSdkFactory.getInstance()!!
     val imageData = Base64.decode(b64Img, Base64.DEFAULT)
     val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
-    val score = instance.face().liveness().extractAndScore(bitmap)
+    val score = instance.face().livenessPhoto().extractAndScore(bitmap)
     promise.resolve(score)
+  }
+
+  @ReactMethod
+  fun livenessGetDirection(b64Img: String, promise: Promise) {
+    val instance = BiometricSdkFactory.getInstance()!!
+    val imageData = Base64.decode(b64Img, Base64.DEFAULT)
+    val bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+    val direction = instance.face().livenessPosition().detectPosition(bitmap)
+    promise.resolve(direction)
   }
 
   companion object {

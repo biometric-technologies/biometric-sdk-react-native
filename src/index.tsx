@@ -6,6 +6,8 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
+type FACE_DIRECTION = 'LEFT' | 'RIGHT' | 'UP' | 'DOWN' | 'STRAIGHT';
+
 const BiometricSdkReactNative = NativeModules.BiometricSdkReactNative
   ? NativeModules.BiometricSdkReactNative
   : new Proxy(
@@ -65,5 +67,26 @@ export async function livenessScore(capturedImage: string): Promise<number> {
   } catch (e) {
     console.error('livenessScore  failed', e);
     return -1.0;
+  }
+}
+
+export async function livenessGetDirection(capturedImage: string): Promise<FACE_DIRECTION> {
+  try {
+    switch ( await BiometricSdkReactNative.livenessGetDirection(capturedImage)) {
+      case 1:
+        return 'LEFT';
+      case 2:
+        return 'RIGHT';
+      case 3:
+        return 'UP';
+      case 4:
+        return 'DOWN';
+      case 0:
+      default:
+        return 'STRAIGHT';
+    }
+  } catch (e) {
+    console.error('liveness get direction failed', e);
+    return 'STRAIGHT';
   }
 }

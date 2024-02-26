@@ -3,7 +3,7 @@ import BiometricSdk
 
 @objc(BiometricSdkReactNative)
 class BiometricSdkReactNative: NSObject {
-
+    
     @objc
     func configure(_ configuration: NSDictionary,
                    resolve:  @escaping RCTPromiseResolveBlock,
@@ -33,21 +33,29 @@ class BiometricSdkReactNative: NSObject {
                     )
                     var livenessProperties: FaceLivenessDetectionProperties? = nil
                     if (configuration.value(forKeyPath: "withFace.liveness") != nil) {
-                        let livenessModelPath = configuration.value(forKeyPath: "withFace.liveness.tfModel.path") as! String
-                        let livenessModelChecksum = configuration.value(forKeyPath: "withFace.liveness.tfModel.modelChecksum") as? String
-                        let livenessModelinputWidth = configuration.value(forKeyPath: "withFace.liveness.tfModel.inputWidth") as! Int32
-                        let livenessModelinputHeight = configuration.value(forKeyPath: "withFace.liveness.tfModel.inputHeight") as! Int32
-                        let livenessModelthreshold = configuration.value(forKeyPath: "withFace.liveness.tfModel.threshold") as! Double
-                        livenessProperties = FaceLivenessDetectionProperties(
-                            tfModel: LivenessModelConfiguration(
+                        var livenessPhoto: LivenessModelPhotoConfiguration? = nil
+                        if (configuration.value(forKeyPath: "withFace.liveness.photo") != nil) {
+                            let livenessModelPath = configuration.value(forKeyPath: "withFace.liveness.photo.path") as! String
+                            let livenessModelChecksum = configuration.value(forKeyPath: "withFace.liveness.photo.modelChecksum") as? String
+                            let livenessModelinputWidth = configuration.value(forKeyPath: "withFace.liveness.photo.inputWidth") as! Int32
+                            let livenessModelinputHeight = configuration.value(forKeyPath: "withFace.liveness.photo.inputHeight") as! Int32
+                            let livenessModelthreshold = configuration.value(forKeyPath: "withFace.liveness.photo.threshold") as! Double
+                            livenessPhoto = LivenessModelPhotoConfiguration(
                                 path: livenessModelPath,
                                 inputWidth: livenessModelinputWidth,
                                 inputHeight: livenessModelinputHeight,
                                 threshold: livenessModelthreshold,
                                 modelChecksum: livenessModelChecksum,
                                 modelChecksumMethod: livenessModelChecksum != nil ? HashMethod.sha256 : nil,
-                                overrideCacheOnWrongChecksum: livenessModelChecksum != nil ? true : nil)
-                        )
+                                overrideCacheOnWrongChecksum: livenessModelChecksum != nil ? true : nil
+                            )
+                        }
+                        var livenesPosition: LivenessModelPositionConfiguration? = nil
+                        if (configuration.value(forKeyPath: "withFace.liveness.direction") != nil) {
+                            let livenessModelthreshold = configuration.value(forKeyPath: "withFace.liveness.direction.threshold") as! Double
+                            livenesPosition = LivenessModelPositionConfiguration(threshold: livenessModelthreshold)
+                        }
+                        livenessProperties = FaceLivenessDetectionProperties(photo: livenessPhoto, position: livenesPosition)
                     }
                     builder = builder
                         .withFace(extractor: FaceExtractProperties(),
@@ -62,7 +70,7 @@ class BiometricSdkReactNative: NSObject {
             }
         }
     }
-
+    
     @objc
     func faceExtractAndEncode(_ b64Img: NSString,
                               resolve:  @escaping RCTPromiseResolveBlock,
@@ -79,7 +87,7 @@ class BiometricSdkReactNative: NSObject {
             reject("FACE_EXTRACT_ERROR", "No biometrics were found on image", nil)
         }
     }
-
+    
     @objc
     func faceCompare(_ b64Template1: NSString,
                      b64Template2: NSString,
@@ -90,7 +98,7 @@ class BiometricSdkReactNative: NSObject {
         let sample2 = Data(base64Encoded: b64Template2 as String)!
         resolve(instance.face().matcher().matches(sample1: sample1, sample2: sample2))
     }
-
+    
     @objc
     func faceScore(_ b64Template1: NSString,
                    b64Template2: NSString,
@@ -101,7 +109,7 @@ class BiometricSdkReactNative: NSObject {
         let sample2 = Data(base64Encoded: b64Template2 as String)!
         resolve(instance.face().matcher().matchScore(sample1: sample1, sample2: sample2))
     }
-
+    
     @objc
     func livenessScore(_ b64Img: NSString,
                        resolve:  @escaping RCTPromiseResolveBlock,
@@ -110,9 +118,9 @@ class BiometricSdkReactNative: NSObject {
         let img = UIImage(data: imageData)!
         let cgImagePtr = UnsafeMutableRawPointer(Unmanaged.passRetained(img.cgImage!).toOpaque())
         let instance = BiometricSdkFactory.shared.getInstance()!
-        resolve(instance.face().liveness().extractAndScore(nativeImage: cgImagePtr))
+        resolve(instance.face().livenessPhoto().extractAndScore(nativeImage: cgImagePtr))
     }
-
+    
     @objc
     func livenessValidate(_ b64Img: NSString,
                           resolve:  @escaping RCTPromiseResolveBlock,
@@ -121,6 +129,17 @@ class BiometricSdkReactNative: NSObject {
         let img = UIImage(data: imageData)!
         let cgImagePtr = UnsafeMutableRawPointer(Unmanaged.passRetained(img.cgImage!).toOpaque())
         let instance = BiometricSdkFactory.shared.getInstance()!
-        resolve(instance.face().liveness().extractAndValidate(nativeImage: cgImagePtr))
+        resolve(instance.face().livenessPhoto().extractAndValidate(nativeImage: cgImagePtr))
+    }
+    
+    @objc
+    func livenessGetDirection(_ b64Img: NSString,
+                              resolve:  @escaping RCTPromiseResolveBlock,
+                              reject: @escaping RCTPromiseRejectBlock) -> Void {
+        let imageData = Data(base64Encoded: b64Img as String)!
+        let img = UIImage(data: imageData)!
+        let cgImagePtr = UnsafeMutableRawPointer(Unmanaged.passRetained(img.cgImage!).toOpaque())
+        let instance = BiometricSdkFactory.shared.getInstance()!
+        resolve(instance.face().livenessPosition().detectPosition(nativeImage: cgImagePtr))
     }
 }
