@@ -1,9 +1,9 @@
 name: Release new version
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    # Publishing to npm and GitHub is a deliberate act: run it by hand from the Actions tab.
+    # Pushes to master (docs, examples) no longer start a release.
 
 jobs:
   release:
