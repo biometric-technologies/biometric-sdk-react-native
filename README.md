@@ -2,7 +2,7 @@
 
 # Biometric SDK for React Native
 
-Face comparison and liveness checks for React Native apps, running entirely on the phone. You pass two photos as base64 strings and get back whether they show the same person; you pass one photo and get back whether it is a live face or a printed photo or screen replay. Under the JavaScript API is a thin Kotlin and Swift bridge to the [Iriscan Biometric SDK](https://github.com/biometric-technologies/biometric-sdk), so no image or template leaves the device. This is the package [Inji Wallet](https://docs.iriscan.net/mosip), the reference wallet of the MOSIP national ID platform, uses for offline selfie verification.
+Face comparison and liveness checks for React Native apps, running entirely on the phone. You pass two photos as base64 strings and get back whether they show the same person; you pass one photo and get back whether it is a live face or a printed photo or screen replay. Under the JavaScript API is a thin Kotlin and Swift bridge to the [Iriscan Biometric SDK](https://github.com/biometric-technologies/biometric-sdk), so no image or template leaves the device. This is the package [Inji Wallet](https://docs.iriscan.com/mosip), the reference wallet of the MOSIP national ID platform, uses for offline selfie verification.
 
 [![npm](https://img.shields.io/npm/v/@iriscan/biometric-sdk-react-native)](https://www.npmjs.com/package/@iriscan/biometric-sdk-react-native)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -76,7 +76,7 @@ Only the parts you configure are loaded: leave out `liveness` if you only need f
 
 **The native layer** is one class per platform: `BiometricSdkReactNativeModule.kt` for Android and `BiometricSdkReactNative.swift` for iOS. Both do the same job. `configure` reads the JavaScript object and builds the SDK configuration (`FaceNetModelConfiguration`, `FaceMatchProperties`, `LivenessModelPhotoConfiguration`, `LivenessModelPositionConfiguration`), then initializes `BiometricSdkFactory` on a background thread. The other methods decode the base64 string into a `Bitmap` on Android or a `CGImage` on iOS, hand it to the SDK and resolve the promise with the result. Templates travel back to JavaScript as base64 strings, so you can store them if you want to compare against them later without re-encoding the photo.
 
-**The SDK** is `net.iriscan:biometric-sdk-android:0.6.0` on Android (pulled in by `android/build.gradle`) and the `BiometricSdk` 0.6.0 CocoaPod on iOS (declared in the podspec). It finds the face with ML Kit on Android and Apple Vision on iOS, aligns it, runs a FaceNet model in TensorFlow Lite to get an embedding, and compares two embeddings by Euclidean distance: `faceCompare` is true when the distance is at or below `matcher.threshold`. Liveness runs a second TensorFlow Lite model on the face crop; head direction comes from the head pose angles the face detector reports. The full API, the iris module and the server-side JVM build are described at [docs.iriscan.net/sdk](https://docs.iriscan.net/sdk).
+**The SDK** is `net.iriscan:biometric-sdk-android:0.6.0` on Android (pulled in by `android/build.gradle`) and the `BiometricSdk` 0.6.0 CocoaPod on iOS (declared in the podspec). It finds the face with ML Kit on Android and Apple Vision on iOS, aligns it, runs a FaceNet model in TensorFlow Lite to get an embedding, and compares two embeddings by Euclidean distance: `faceCompare` is true when the distance is at or below `matcher.threshold`. Liveness runs a second TensorFlow Lite model on the face crop; head direction comes from the head pose angles the face detector reports. The full API, the iris module and the server-side JVM build are described at [docs.iriscan.com/sdk](https://docs.iriscan.com/sdk).
 
 **Models.** The configuration above points at the FaceNet model from [tensorflow-facenet-model-test](https://github.com/biometric-technologies/tensorflow-facenet-model-test) and the DeePixBiS liveness model from [liveness-detection-model](https://github.com/biometric-technologies/liveness-detection-model). The SDK downloads them on first run and caches them. When you set `modelChecksum`, the file is verified with SHA-256 and downloaded again if the cached copy does not match. You can swap in your own retrained `.tflite` model by changing the path and sizes; no code change is needed.
 
@@ -95,7 +95,7 @@ The native sources open from the example project: `example/ios/BiometricSdkReact
 
 ## Where it is used
 
-Inji Wallet, the mobile wallet of the [MOSIP](https://docs.iriscan.net/mosip) national ID platform, calls `configure` and `faceCompare` from this package to compare a selfie with the photo inside a verifiable credential before the credential is shared. The comparison runs offline on the phone. A deployment can ship its own model through the wallet's build configuration.
+Inji Wallet, the mobile wallet of the [MOSIP](https://docs.iriscan.com/mosip) national ID platform, calls `configure` and `faceCompare` from this package to compare a selfie with the photo inside a verifiable credential before the credential is shared. The comparison runs offline on the phone. A deployment can ship its own model through the wallet's build configuration.
 
 ## Related repositories
 
@@ -104,7 +104,7 @@ Inji Wallet, the mobile wallet of the [MOSIP](https://docs.iriscan.net/mosip) na
 - [biometric-sdk-android-example](https://github.com/biometric-technologies/biometric-sdk-android-example) and [biometric-sdk-ios-example](https://github.com/biometric-technologies/biometric-sdk-ios-example): native example apps without React Native.
 - [liveness-detection-model](https://github.com/biometric-technologies/liveness-detection-model): training code and released `.tflite` liveness models.
 - [tensorflow-facenet-model-test](https://github.com/biometric-technologies/tensorflow-facenet-model-test): the FaceNet model used in the examples.
-- [docs](https://github.com/biometric-technologies/docs): source of the developer documentation at docs.iriscan.net.
+- [docs](https://github.com/biometric-technologies/docs): source of the developer documentation at docs.iriscan.com.
 
 ## Contributing
 
