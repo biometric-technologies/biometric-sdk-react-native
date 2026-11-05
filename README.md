@@ -116,4 +116,4 @@ MIT, copyright (c) 2023 Slava. See [LICENSE](LICENSE). The native Biometric SDK 
 
 ## Contact
 
-Questions and bug reports: [open an issue](https://github.com/biometric-technologies/biometric-sdk-react-native/issues) or write to info@iriscan.net. More about Iriscan at https://www.iriscan.com.
+Questions and bug reports: [open an issue](https://github.com/biometric-technologies/biometric-sdk-react-native/issues) or write to info@iriscan.com. More about Iriscan at https://www.iriscan.com.

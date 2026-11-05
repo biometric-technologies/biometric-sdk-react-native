@@ -42,7 +42,7 @@
     "android"
   ],
   "repository": "https://github.com/biometric-technologies/biometric-sdk-react-native",
-  "author": "Slava <slava@iriscan.net> (https://github.com/biometric-technologies/biometric-sdk-react-native)",
+  "author": "Iriscan <info@iriscan.com> (https://github.com/biometric-technologies/biometric-sdk-react-native)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/biometric-technologies/biometric-sdk-react-native/issues"
